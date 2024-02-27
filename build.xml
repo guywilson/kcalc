@@ -1,0 +1,28 @@
+<project name="kcalc" default="compile" basedir=".">
+    <description>Build script for the kcalc command-line calculator</description>
+    <!-- set global properties for this build -->
+    <property name="src" location="src"/>
+    <property name="dist" location="distribution"/>
+    <property name="kotlin.lib" location="/opt/homebrew/Cellar/kotlin/1.9.22/libexec/lib"/>
+
+    <typedef resource="org/jetbrains/kotlin/ant/antlib.xml" classpath="${kotlin.lib}/kotlin-ant.jar"/>
+
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp/>
+    </target>
+
+    <target name="compile" depends="init" description="compile the src files">
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}/lib"/>
+
+        <kotlinc output="${dist}/lib/kc.jar">
+            <src path="${src}"/>
+        </kotlinc>
+    </target>
+
+    <target name="clean" description="clean up">
+        <!-- Delete the ${build} and ${dist} directory trees -->
+        <delete dir="${dist}"/>
+    </target>
+</project>

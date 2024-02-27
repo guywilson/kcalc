@@ -24,5 +24,7 @@ fun main() {
 }
 
 fun evaluate(expression: String) : Operand {
-    
+    val result = Operand(0.0)
+
+    return result
 }
