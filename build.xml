@@ -16,7 +16,7 @@
         <!-- Create the distribution directory -->
         <mkdir dir="${dist}/lib"/>
 
-        <kotlinc output="${dist}/lib/kc.jar">
+        <kotlinc includeRuntime="true" output="${dist}/lib/kc.jar">
             <src path="${src}"/>
         </kotlinc>
     </target>
