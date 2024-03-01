@@ -18,8 +18,12 @@ fun main() {
         if (calculation == "exit") {
             go = false;
         }
+        else if (calculation == "setp") {
+
+        }
         else {
             println("You entered calculation '$calculation'")
+            var result: Operand = evaluate(calculation)
         }
     }
 }
@@ -109,10 +113,34 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
             }
         }
     }
+
+    /*
+    While there are still operator tokens in the stack:
+        If the operator token on the top of the stack is a parenthesis,
+        then there are mismatched parentheses.
+        Pop the operator onto the output queue.
+    */
+    while (!operatorStack.isEmpty()) {
+        val op: Operator = operatorStack.removeFirst();
+
+        if (Utils.isBrace(op.toChar())) {
+            /*
+            ** If we've got here, we must have unmatched parenthesis...
+            */
+            throw Exception("Found too many parenthesis on operator stack");
+        }
+        else {
+            outQueue.add(op.toString());
+        }
+    }
 }
 
 fun evaluate(expression: String) : Operand {
-    val result = Operand(0.0)
+    var result: Operand = Operand(0.0)
+
+    var queue: ArrayDeque<String> = ArrayDeque<String>(25)
+
+    convertToRPN(expression, queue)
 
     return result
 }

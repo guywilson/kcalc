@@ -23,11 +23,24 @@ enum class Operation {
     UNKNOWN
 }
 
-open class Operator constructor(op: Operation) {
+open class Operator constructor(token: Char) : Token(token) {
+    companion object StaticMembers {
+        public var toChar: (Operation) -> Char = {
+            operation: Operation -> 
+                when (operation) {
+                    Operation.ADD       -> '+'
+                    Operation.SUBTRACT  -> '-'
+                    Operation.MULTIPLY  -> '*'
+                    Operation.DIVIDE    -> '/'
+                    Operation.MOD       -> '%'
+                    else                -> '0'
+                }
+        }
+    }
 
-    val operation: Operation = op
+    val operation: Operation = getOperation(token)
 
-    constructor(op: Char) : this(getOperation(op)) {
+    constructor(op: Operation) : this(Operator.toChar(op)) {
 
     }
 
@@ -73,15 +86,8 @@ open class Operator constructor(op: Operation) {
         }
     }
 
-    public fun toChar() : Char {
-        when (operation) {
-            Operation.ADD       -> return '+'
-            Operation.SUBTRACT  -> return '-'
-            Operation.MULTIPLY  -> return '*'
-            Operation.DIVIDE    -> return '/'
-            Operation.MOD       -> return '%'
-            else                -> return '0'
-        }
+    public override fun toChar() : Char {
+        return Operator.toChar(this.operation)
     }
 
     public override fun toString() : String {
