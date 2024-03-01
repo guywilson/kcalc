@@ -3,17 +3,33 @@ package com.guy.calc
 import com.guy.calc.Operand
 import java.math.BigDecimal
 
+fun getOperation(ch: Char) : Operation {
+    when (ch) {
+        '+' -> return Operation.ADD
+        '-' -> return Operation.SUBTRACT
+        '*' -> return Operation.MULTIPLY
+        '/' -> return Operation.DIVIDE
+        '%' -> return Operation.MOD
+        else -> return Operation.UNKNOWN
+    }
+}
+
 enum class Operation {
     ADD, 
     SUBTRACT, 
     MULTIPLY, 
     DIVIDE, 
-    MOD
+    MOD,
+    UNKNOWN
 }
 
 open class Operator constructor(op: Operation) {
 
     val operation: Operation = op
+
+    constructor(op: Char) : this(getOperation(op)) {
+
+    }
 
     private fun add(o1: Operand, o2: Operand) : Operand {
         return Operand(o1.decimalValue.add(o2.decimalValue))
@@ -43,6 +59,39 @@ open class Operator constructor(op: Operation) {
             Operation.DIVIDE    -> return divide(o1, o2)
             Operation.MOD       -> return mod(o1, o2)
             else                -> return Operand(0.0)
+        }
+    }
+
+    public fun getPrecedence() : Int {
+        when (operation) {
+            Operation.ADD       -> return 2
+            Operation.SUBTRACT  -> return 2
+            Operation.MULTIPLY  -> return 3
+            Operation.DIVIDE    -> return 3
+            Operation.MOD       -> return 3
+            else                -> return 0
+        }
+    }
+
+    public fun toChar() : Char {
+        when (operation) {
+            Operation.ADD       -> return '+'
+            Operation.SUBTRACT  -> return '-'
+            Operation.MULTIPLY  -> return '*'
+            Operation.DIVIDE    -> return '/'
+            Operation.MOD       -> return '%'
+            else                -> return '0'
+        }
+    }
+
+    public override fun toString() : String {
+        when (operation) {
+            Operation.ADD       -> return "+"
+            Operation.SUBTRACT  -> return "-"
+            Operation.MULTIPLY  -> return "*"
+            Operation.DIVIDE    -> return "/"
+            Operation.MOD       -> return "%"
+            else                -> return "0"
         }
     }
 }

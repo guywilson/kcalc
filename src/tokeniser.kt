@@ -7,13 +7,6 @@ class Tokeniser constructor(expression: String) {
     private var startIndex: Int = 0
     private var endIndex: Int = 0
 
-    private var isWhiteSpace: (Char) -> Boolean = { ch: Char -> ch in " \t\n\r" }
-    private var isToken: (Char) ->      Boolean = { ch: Char -> ch in " \t\n\r+-*/%()[]{}" }
-    private var isDigit: (Char) ->      Boolean = { ch: Char -> ch in "0123456789" }
-    private var isBrace: (Char) ->      Boolean = { ch: Char -> ch in "([{}])" }
-    private var isBraceLeft: (Char) ->  Boolean = { ch: Char -> ch in "([{" }
-    private var isBraceRight: (Char) -> Boolean = { ch: Char -> ch in "}])" }
-
     private fun findNextTokenPos() : Int {
         var i:                      Int = startIndex
         var ch:                     Char
@@ -24,7 +17,7 @@ class Tokeniser constructor(expression: String) {
             ch = expr[i]
 
             if (lookingForWhiteSpace) {
-                if (isWhiteSpace(ch)) {
+                if (Utils.isWhiteSpace(ch)) {
                     startIndex++
                     continue
                 }
@@ -33,10 +26,10 @@ class Tokeniser constructor(expression: String) {
                 lookingForWhiteSpace = false
             }
 
-            if (isWhiteSpace(ch)) {
+            if (Utils.isWhiteSpace(ch)) {
                 return i
             }
-            if (isToken(ch)) {
+            if (Utils.isToken(ch)) {
                 /*
                 ** Do we have a token on it's own, or is it a delimiter...
                 */
@@ -50,12 +43,12 @@ class Tokeniser constructor(expression: String) {
                     ** and the previous char is not a ')' or a digit then this must be a -ve number,
                     ** not the '-' operator...
                     */
-                    if (ch == '-' && isDigit(expr[i + 1])) {
+                    if (ch == '-' && Utils.isDigit(expr[i + 1])) {
                         var isNegativeOperand: Boolean = false
 
                         if (i > 0) {
-                            val isPreviousCharBrace: Boolean = isBraceRight(expr[i - 1])
-                            val isPreviousCharDigit: Boolean = isDigit(expr[i - 1])
+                            val isPreviousCharBrace: Boolean = Utils.isBraceRight(expr[i - 1])
+                            val isPreviousCharDigit: Boolean = Utils.isDigit(expr[i - 1])
 
                             if (!isPreviousCharBrace && !isPreviousCharDigit) {
                                 isNegativeOperand = true
@@ -112,5 +105,13 @@ class Tokeniser constructor(expression: String) {
         else {
             return false
         }
+    }
+
+    public fun nextToken() : String {
+        val token: String = expr.substring(startIndex, endIndex)
+
+        startIndex = endIndex
+
+        return token
     }
 }
