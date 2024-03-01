@@ -2,7 +2,7 @@ package com.guy.calc
 
 import java.math.BigDecimal
 
-open class Operand constructor(value: BigDecimal) {
+open class Operand constructor(value: BigDecimal) : Token() {
 
     constructor(strValue: String) : this(BigDecimal(strValue)) {
 
@@ -12,7 +12,13 @@ open class Operand constructor(value: BigDecimal) {
 
     }
 
+    public override fun toString() : String {
+        return decimalValue.toString()
+    }
+
+    public override fun toChar() : Char {
+        return '0'
+    }
+
     public var decimalValue: BigDecimal = value
-        get() = decimalValue
-        set
 }

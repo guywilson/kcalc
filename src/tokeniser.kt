@@ -8,12 +8,11 @@ class Tokeniser constructor(expression: String) {
     private var endIndex: Int = 0
 
     private fun findNextTokenPos() : Int {
-        var i:                      Int = startIndex
         var ch:                     Char
         var lookingForWhiteSpace:   Boolean = true
         var tokenLength:            Int = 0
 
-        while (i < exprLen) {
+        for (i in startIndex..exprLen - 1) {
             ch = expr[i]
 
             if (lookingForWhiteSpace) {
@@ -21,9 +20,9 @@ class Tokeniser constructor(expression: String) {
                     startIndex++
                     continue
                 }
-            }
-            else {
-                lookingForWhiteSpace = false
+                else {
+                    lookingForWhiteSpace = false
+                }
             }
 
             if (Utils.isWhiteSpace(ch)) {
@@ -88,11 +87,9 @@ class Tokeniser constructor(expression: String) {
             if (i == (exprLen - 1)) {
                 return i + 1
             }
-
-            i++
         }
 
-        return (i + 1)
+        return -1
     }
 
     public fun hasMoreTokens() : Boolean {

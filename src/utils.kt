@@ -1,5 +1,33 @@
 package com.guy.calc
-// hjkhkjh
+
+fun ArrayDeque<Token>.push(item: Token) {
+    this.addFirst(item)
+}
+
+fun ArrayDeque<Token>.pop() : Token {
+    return this.removeFirst()
+}
+
+fun ArrayDeque<Token>.peek() : Token {
+    return this.first()
+}
+
+fun ArrayDeque<String>.push(item: String) {
+    this.addFirst(item)
+}
+
+fun ArrayDeque<String>.pop() : String {
+    return this.removeFirst()
+}
+
+fun ArrayDeque<String>.peek() : String {
+    return this.first()
+}
+
+fun ArrayDeque<String>.poll() : String {
+    return this.removeFirst()
+}
+
 class Utils {
     companion object CharUtils {
         public var isWhiteSpace: (Char) -> Boolean = { ch: Char -> ch in " \t\n\r" }
@@ -17,7 +45,7 @@ class Utils {
                 isop = false
             }
             else {
-                for (i in 0..token.length) {
+                for (i in 0..token.length - 1) {
                     if (!Utils.isDigit(token[i])) {
                         isop = false
                         break
