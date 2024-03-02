@@ -28,7 +28,7 @@ fun main() {
     var go: Boolean = true
 
     while (go) {
-        val calculation = reader.readLine("calc > ")
+        val calculation: String = reader.readLine("calc > ")
 
         if (calculation == "exit" || calculation.startsWith('q')) {
             go = false;
