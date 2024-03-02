@@ -1,0 +1,3 @@
+#!/bin/bash
+
+kotlin ./distribution/lib/kc.jar

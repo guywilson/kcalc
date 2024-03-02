@@ -45,23 +45,23 @@ open class Operator constructor(token: Char) : Token(token) {
     }
 
     private fun add(o1: Operand, o2: Operand) : Operand {
-        return Operand(o1.decimalValue.add(o2.decimalValue))
+        return Operand(o1.decimalValue.add(o2.decimalValue, Utils.mathContext))
     }
 
     private fun subtract(o1: Operand, o2: Operand) : Operand {
-        return Operand(o1.decimalValue.subtract(o2.decimalValue))
+        return Operand(o1.decimalValue.subtract(o2.decimalValue, Utils.mathContext))
     }
 
     private fun multiply(o1: Operand, o2: Operand) : Operand {
-        return Operand(o1.decimalValue.multiply(o2.decimalValue))
+        return Operand(o1.decimalValue.multiply(o2.decimalValue, Utils.mathContext))
     }
 
     private fun divide(o1: Operand, o2: Operand) : Operand {
-        return Operand(o1.decimalValue.divide(o2.decimalValue))
+        return Operand(o1.decimalValue.divide(o2.decimalValue, Utils.mathContext))
     }
 
     private fun mod(o1: Operand, o2: Operand) : Operand {
-        return Operand(o1.decimalValue.remainder(o2.decimalValue))
+        return Operand(o1.decimalValue.remainder(o2.decimalValue, Utils.mathContext))
     }
 
     public fun evaluate(o1: Operand, o2: Operand) : Operand {

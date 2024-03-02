@@ -1,5 +1,8 @@
 package com.guy.calc
 
+import java.math.MathContext
+import java.math.RoundingMode
+
 fun ArrayDeque<Token>.push(item: Token) {
     this.addFirst(item)
 }
@@ -29,7 +32,13 @@ fun ArrayDeque<String>.poll() : String {
 }
 
 class Utils {
-    companion object CharUtils {
+    companion object StaticMembers {
+        private const val DEFAULT_SCALE: Int = 2
+        private const val MAX_DISPLAY_PRECISION: Int = 80
+
+        public var mathContext: MathContext = 
+                    MathContext(MAX_DISPLAY_PRECISION, RoundingMode.HALF_UP)
+
         public var isWhiteSpace: (Char) -> Boolean = { ch: Char -> ch in " \t\n\r" }
         public var isToken: (Char) ->      Boolean = { ch: Char -> ch in " \t\n\r+-*/%()[]{}" }
         public var isDigit: (Char) ->      Boolean = { ch: Char -> ch in "0123456789" }
@@ -55,5 +64,7 @@ class Utils {
     
             return isop
         }
+
+        public var scale: Int = DEFAULT_SCALE
     }
 }

@@ -15,11 +15,15 @@ fun main() {
 
         val calculation = readln()
 
-        if (calculation == "exit") {
+        if (calculation == "exit" || calculation.startsWith('q')) {
             go = false;
         }
-        else if (calculation == "setp") {
+        else if (calculation.startsWith("setp", false)) {
+            var s: Int? = calculation.substring(4).toIntOrNull()
 
+            if (s != null) {
+                Utils.scale = s
+            }
         }
         else {
             var result: Operand = evaluate(calculation)
@@ -124,10 +128,10 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
     }
 
     /*
-    While there are still operator tokens in the stack:
-        If the operator token on the top of the stack is a parenthesis,
-        then there are mismatched parentheses.
-        Pop the operator onto the output queue.
+    ** While there are still operator tokens in the stack:
+    ** If the operator token on the top of the stack is a parenthesis,
+    ** then there are mismatched parentheses.
+    ** Pop the operator onto the output queue.
     */
     while (!operatorStack.isEmpty()) {
         val op: Operator = operatorStack.pop() as Operator
