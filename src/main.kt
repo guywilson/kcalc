@@ -3,17 +3,32 @@ package com.guy.calc
 import kotlin.io.*
 import kotlin.collections.*
 
+import org.jline.reader.LineReader
+import org.jline.reader.LineReaderBuilder
+import org.jline.reader.impl.DefaultParser
+import org.jline.terminal.Terminal
+import org.jline.terminal.TerminalBuilder
+import org.jline.utils.InfoCmp.Capability
+
 fun main() {
     println("Welcome to Calc. A cmd line scientific calculator. Copyright © Guy Wilson ")
     println("Type a calculation or command at the prompt, type 'help' for info.")
     println("")
 
+    val terminal: Terminal = TerminalBuilder.builder().build()
+
+    var reader: LineReader = 
+        LineReaderBuilder.builder()
+            .terminal(terminal)
+            .parser(DefaultParser())
+            .build()
+    
+    reader.setOpt(LineReader.Option.AUTO_FRESH_LINE)
+
     var go: Boolean = true
 
     while (go) {
-        print("calc> ")
-
-        val calculation = readln()
+        val calculation = reader.readLine("calc > ")
 
         if (calculation == "exit" || calculation.startsWith('q')) {
             go = false;
@@ -42,7 +57,7 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
     while (tok.hasMoreTokens()) {
         val token: String = tok.nextToken()
 
-        println("Got token: '$token'")
+//        println("Got token: '$token'")
 
         if (Utils.isOperand(token)) {
             outQueue.add(token)
@@ -103,8 +118,8 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
                 while (!operatorStack.isEmpty()) {
                     val stackToken: Token = operatorStack.pop()
 
-                    val ch: Char = stackToken.toChar()
-                    println("Popped token '$ch' off the stack")
+//                    val ch: Char = stackToken.toChar()
+//                    println("Popped token '$ch' off the stack")
 
                     if (Utils.isBrace(stackToken.toChar())) {
                         if (Utils.isBraceLeft(stackToken.toChar())) {

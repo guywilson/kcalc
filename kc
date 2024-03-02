@@ -1,3 +1,7 @@
 #!/bin/bash
 
-kotlin ./distribution/lib/kc.jar
+calcjar=/Users/guy/development/kcalc/distribution/lib/kc.jar
+classpath=/opt/homebrew/Cellar/kotlin/1.9.22/libexec/lib/kotlin-runner.jar:/Users/guy/Library/lib/jline-3.25.2-SNAPSHOT.jar:$calcjar
+mainclass=com.guy.calc.MainKt
+
+java -cp $classpath $mainclass
