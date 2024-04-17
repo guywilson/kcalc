@@ -1,19 +1,9 @@
 package com.guy.calc
 
+import kotlin.math.PI
 import java.math.MathContext
 import java.math.RoundingMode
-
-fun ArrayDeque<Char>.push(item: Char) {
-    this.addFirst(item)
-}
-
-fun ArrayDeque<Char>.pop() : Char {
-    return this.removeFirst()
-}
-
-fun ArrayDeque<Char>.peek() : Char {
-    return this.first()
-}
+import java.math.BigDecimal
 
 fun ArrayDeque<String>.push(item: String) {
     this.addFirst(item)
@@ -35,17 +25,25 @@ class Utils {
     companion object StaticMembers {
         private const val DEFAULT_SCALE: Int = 2
         private const val MAX_DISPLAY_PRECISION: Int = 80
-
+    
         public var mathContext: MathContext = 
                     MathContext(MAX_DISPLAY_PRECISION, RoundingMode.HALF_UP)
 
+        private var degreesToRadians: BigDecimal = 
+            BigDecimal(PI, Utils.mathContext)
+                .divide(BigDecimal(180.0, Utils.mathContext), MAX_DISPLAY_PRECISION, RoundingMode.HALF_UP)
+        
+        private var radiansToDegrees: BigDecimal = 
+            BigDecimal(180.0, Utils.mathContext)
+                .divide(BigDecimal(PI, Utils.mathContext), MAX_DISPLAY_PRECISION, RoundingMode.HALF_UP)
+
         public var isWhiteSpace: (Char) -> Boolean = { ch: Char -> ch in " \t\n\r" }
-        public var isToken: (Char) ->      Boolean = { ch: Char -> ch in " \t\n\r+-*/%()[]{}" }
+        public var isToken: (Char) ->      Boolean = { ch: Char -> ch in " \t\n\r+-*/%^&|~()[]{}" }
         public var isDigit: (Char) ->      Boolean = { ch: Char -> ch in "0123456789abcdefABCDEF" }
         public var isBrace: (Char) ->      Boolean = { ch: Char -> ch in "([{}])" }
         public var isBraceLeft: (Char) ->  Boolean = { ch: Char -> ch in "([{" }
         public var isBraceRight: (Char) -> Boolean = { ch: Char -> ch in "}])" }
-        public var isOperator: (Char) ->   Boolean = { ch: Char -> ch in "+-*/%" }
+        public var isOperator: (Char) ->   Boolean = { ch: Char -> ch in "+-*/%&|~^" }
 
         public fun isOperand(token: String) : Boolean {
             var isop: Boolean = true
@@ -63,6 +61,46 @@ class Utils {
             }
     
             return isop
+        }
+
+        public fun isConstant(token: String) : Boolean {
+            when (token) {
+                "pi"    -> return true
+                "c"     -> return true
+                "g"     -> return true
+                "eu"    -> return true
+                else    -> return false
+            }
+        }
+
+        public fun isFunction(token: String) : Boolean {
+            when (token) {
+                "sin"   -> return true
+                "cos"   -> return true
+                "tan"   -> return true
+                "asin"  -> return true
+                "acos"  -> return true
+                "atan"  -> return true
+                "sinh"  -> return true
+                "cosh"  -> return true
+                "tanh"  -> return true
+                "asinh" -> return true
+                "acosh" -> return true
+                "atanh" -> return true
+                "sqrt"  -> return true
+                "log"   -> return true
+                "ln"    -> return true
+                "fact"  -> return true
+                else    -> return false
+            }
+        }
+
+        public fun toRadians(degrees: BigDecimal) : BigDecimal {
+            return degrees.multiply(degreesToRadians, Utils.mathContext)
+        }
+
+        public fun toDegrees(radians: BigDecimal) : BigDecimal {
+            return radians.multiply(radiansToDegrees, Utils.mathContext)
         }
 
         public var scale: Int = DEFAULT_SCALE

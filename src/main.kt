@@ -86,18 +86,27 @@ fun main() {
     }
 }
 
-fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
-    var operatorStack: ArrayDeque<Char> = ArrayDeque<Char>(24)
+fun convertToRPN(expr: String, base: Base, outQueue: ArrayDeque<String>) {
+    var operatorStack: ArrayDeque<String> = ArrayDeque<String>(24)
 
     var tok: Tokeniser = Tokeniser(expr)
 
     while (tok.hasMoreTokens()) {
         val token: String = tok.nextToken()
 
-//        println("Got token: '$token'")
+        // println("Got token: '$token'")
 
         if (Utils.isOperand(token)) {
             outQueue.add(token)
+        }
+        else if (Utils.isConstant(token)) {
+            when (base) {
+                Base.DECIMAL    -> outQueue.add(token)
+                else            -> throw Exception("Constants are only supported in DECimal mode")
+            }
+        }
+        else if (Utils.isFunction(token)) {
+            operatorStack.push(token)
         }
         /*
         ** If the token is an operator, o1, then:
@@ -113,7 +122,7 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
             val o1: Char = token[0]
 
             while (!operatorStack.isEmpty()) {
-                var stackToken: Char = operatorStack.peek()
+                var stackToken: Char = operatorStack.peek()[0]
 
                 if (!Utils.isOperator(stackToken)) {
                     break
@@ -122,7 +131,7 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
                 var o2: Char = stackToken
 
                 if (OperationUtils.getPrecedence(OperationUtils.getOperation(o1)) <= OperationUtils.getPrecedence(OperationUtils.getOperation(o2))) {
-                    o2 = operatorStack.pop()
+                    o2 = operatorStack.pop()[0]
                     outQueue.add(o2.toString())
                 }
                 else {
@@ -130,14 +139,14 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
                 }
             }
 
-            operatorStack.push(o1)
+            operatorStack.push(o1.toString())
         }
         else if (Utils.isBrace(token[0])) {
             /*
             ** If the token is a left parenthesis (i.e. "("), then push it onto the stack.
             */
             if (Utils.isBraceLeft(token[0])) {
-                operatorStack.push(token[0])
+                operatorStack.push(token)
             }
             else {
                 /*
@@ -153,10 +162,10 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
                 var foundLeftParenthesis: Boolean = false
 
                 while (!operatorStack.isEmpty()) {
-                    val stackToken: Char = operatorStack.pop()
+                    val stackToken: Char = operatorStack.pop()[0]
 
-//                    val ch: Char = stackToken.toChar()
-//                    println("Popped token '$ch' off the stack")
+                    // val ch: Char = stackToken.toChar()
+                    // println("Popped token '$ch' off the stack")
 
                     if (Utils.isBrace(stackToken)) {
                         if (Utils.isBraceLeft(stackToken)) {
@@ -186,16 +195,16 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
     ** Pop the operator onto the output queue.
     */
     while (!operatorStack.isEmpty()) {
-        val op: Char = operatorStack.pop()
+        val op: String = operatorStack.pop()
 
-        if (Utils.isBrace(op)) {
+        if (Utils.isBrace(op[0])) {
             /*
             ** If we've got here, we must have unmatched parenthesis...
             */
             throw Exception("Found too many parenthesis on operator stack")
         }
         else {
-            outQueue.add(op.toString())
+            outQueue.add(op)
         }
     }
 }
@@ -203,7 +212,7 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
 fun evaluate(expression: String, base: Base) : String {
     var queue: ArrayDeque<String> = ArrayDeque<String>(25)
 
-    convertToRPN(expression, queue)
+    convertToRPN(expression, base, queue)
 
     var stack: ArrayDeque<String> = ArrayDeque<String>(25)
 
@@ -212,6 +221,12 @@ fun evaluate(expression: String, base: Base) : String {
 
         if (Utils.isOperand(t)) {
             stack.push(t)
+        }
+        else if (Utils.isConstant(t)) {
+            when (base) {
+                Base.DECIMAL    -> stack.push(t)
+                else            -> throw Exception("Constants are only supported in DECimal mode")
+            }
         }
         else if (Utils.isOperator(t[0])) {
             if (stack.size < 2) {
@@ -236,6 +251,23 @@ fun evaluate(expression: String, base: Base) : String {
                     stack.push(IntegerOperation.evaluate(op, base.radix, o1, o2))
                 }
             }
+        }
+        else if (Utils.isFunction(t)) {
+            when (base) {
+                Base.DECIMAL -> {
+                    val o1: BigDecimal = BigDecimal(stack.pop(), Utils.mathContext)
+
+                    val function: Function = FunctionUtils.getFunction(t)
+
+                    stack.push(FunctionUtils.evaluate(function, o1))
+                }
+                else -> {
+                    throw Exception("Functions are only supported in DECimal mode")
+                }
+            }
+        }
+        else {
+            throw Exception("Invalid token $t on queue")
         }
     }
 
