@@ -3,7 +3,7 @@
     <!-- set global properties for this build -->
     <property name="src" location="src"/>
     <property name="dist" location="distribution"/>
-    <property name="kotlin.lib" location="/opt/homebrew/Cellar/kotlin/1.9.22/libexec/lib"/>
+    <property name="kotlin.lib" location="/opt/homebrew/Cellar/kotlin/1.9.23/libexec/lib"/>
 
     <typedef resource="org/jetbrains/kotlin/ant/antlib.xml" classpath="${kotlin.lib}/kotlin-ant.jar"/>
 

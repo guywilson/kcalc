@@ -9,6 +9,20 @@ import org.jline.reader.impl.DefaultParser
 import org.jline.terminal.Terminal
 import org.jline.terminal.TerminalBuilder
 import org.jline.utils.InfoCmp.Capability
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.math.BigInteger
+
+enum class Base(val radix: Int) {
+    DECIMAL(10),
+    HEXADECIMAL(16),
+    OCTAL(8),
+    BINARY(2)
+}
+
+fun printHelp() {
+
+}
 
 fun main() {
     println("Welcome to Calc. A cmd line scientific calculator. Copyright © Guy Wilson ")
@@ -26,12 +40,36 @@ fun main() {
     reader.setOpt(LineReader.Option.AUTO_FRESH_LINE)
 
     var go: Boolean = true
+    var base: Base = Base.DECIMAL
 
     while (go) {
-        val calculation: String = reader.readLine("calc > ")
+        val baseString: String = 
+            when (base) {
+                Base.DECIMAL -> "DEC"
+                Base.HEXADECIMAL -> "HEX"
+                Base.OCTAL -> "OCT"
+                Base.BINARY -> "BIN"
+            }
+
+        val calculation: String = reader.readLine("calc [$baseString]> ")
 
         if (calculation == "exit" || calculation.startsWith('q')) {
-            go = false;
+            go = false
+        }
+        else if (calculation.startsWith("help", false) || calculation.startsWith("?")) {
+            printHelp()
+        }
+        else if (calculation.startsWith("dec", false)) {
+            base = Base.DECIMAL
+        }
+        else if (calculation.startsWith("hex", false)) {
+            base = Base.HEXADECIMAL
+        }
+        else if (calculation.startsWith("oct", false)) {
+            base = Base.OCTAL
+        }
+        else if (calculation.startsWith("bin", false)) {
+            base = Base.BINARY
         }
         else if (calculation.startsWith("setp", false)) {
             var s: Int? = calculation.substring(4).toIntOrNull()
@@ -41,16 +79,15 @@ fun main() {
             }
         }
         else {
-            var result: Operand = evaluate(calculation)
-            var resultString: String = result.toString()
+            var result: String = evaluate(calculation, base)
 
-            println("$calculation = $resultString")
+            println("$calculation = $result")
         }
     }
 }
 
 fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
-    var operatorStack: ArrayDeque<Token> = ArrayDeque<Token>(24)
+    var operatorStack: ArrayDeque<Char> = ArrayDeque<Char>(24)
 
     var tok: Tokeniser = Tokeniser(expr)
 
@@ -73,19 +110,19 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
         **	at the end of iteration push o1 onto the operator stack.
         */
         else if (Utils.isOperator(token[0])) {
-            val o1: Operator = Operator(token[0])
+            val o1: Char = token[0]
 
             while (!operatorStack.isEmpty()) {
-                var stackToken: Token = operatorStack.peek()
+                var stackToken: Char = operatorStack.peek()
 
-                if (stackToken !is Operator) {
+                if (!Utils.isOperator(stackToken)) {
                     break
                 }
 
-                var o2: Operator = stackToken
+                var o2: Char = stackToken
 
-                if (o1.getPrecedence() <= o2.getPrecedence()) {
-                    o2 = operatorStack.pop() as Operator
+                if (OperationUtils.getPrecedence(OperationUtils.getOperation(o1)) <= OperationUtils.getPrecedence(OperationUtils.getOperation(o2))) {
+                    o2 = operatorStack.pop()
                     outQueue.add(o2.toString())
                 }
                 else {
@@ -100,7 +137,7 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
             ** If the token is a left parenthesis (i.e. "("), then push it onto the stack.
             */
             if (Utils.isBraceLeft(token[0])) {
-                operatorStack.push(Brace(token[0]))
+                operatorStack.push(token[0])
             }
             else {
                 /*
@@ -116,13 +153,13 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
                 var foundLeftParenthesis: Boolean = false
 
                 while (!operatorStack.isEmpty()) {
-                    val stackToken: Token = operatorStack.pop()
+                    val stackToken: Char = operatorStack.pop()
 
 //                    val ch: Char = stackToken.toChar()
 //                    println("Popped token '$ch' off the stack")
 
-                    if (Utils.isBrace(stackToken.toChar())) {
-                        if (Utils.isBraceLeft(stackToken.toChar())) {
+                    if (Utils.isBrace(stackToken)) {
+                        if (Utils.isBraceLeft(stackToken)) {
                             foundLeftParenthesis = true
                             break
                         }
@@ -149,9 +186,9 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
     ** Pop the operator onto the output queue.
     */
     while (!operatorStack.isEmpty()) {
-        val op: Operator = operatorStack.pop() as Operator
+        val op: Char = operatorStack.pop()
 
-        if (Utils.isBrace(op.toChar())) {
+        if (Utils.isBrace(op)) {
             /*
             ** If we've got here, we must have unmatched parenthesis...
             */
@@ -163,7 +200,7 @@ fun convertToRPN(expr: String, outQueue: ArrayDeque<String>) {
     }
 }
 
-fun evaluate(expression: String) : Operand {
+fun evaluate(expression: String, base: Base) : String {
     var queue: ArrayDeque<String> = ArrayDeque<String>(25)
 
     convertToRPN(expression, queue)
@@ -181,14 +218,24 @@ fun evaluate(expression: String) : Operand {
                 throw Exception("Too few arguments for operator")
             }
 
-            val o2: Operand = Operand(stack.pop())
-            val o1: Operand = Operand(stack.pop())
+            when (base) {
+                Base.DECIMAL -> {
+                    val o2: BigDecimal = BigDecimal(stack.pop(), Utils.mathContext)
+                    val o1: BigDecimal = BigDecimal(stack.pop(), Utils.mathContext)
 
-            val op: Operator = Operator(t[0])
+                    val op: Operation = OperationUtils.getOperation(t[0])
 
-            val r: Operand = op.evaluate(o1, o2)
+                    stack.push(DecimalOperation.evaluate(op, o1, o2))
+                }
+                else -> {
+                    val o2: BigInteger = BigInteger(stack.pop(), base.radix)
+                    val o1: BigInteger = BigInteger(stack.pop(), base.radix)
 
-            stack.push(r.toString())
+                    val op: Operation = OperationUtils.getOperation(t[0])
+
+                    stack.push(IntegerOperation.evaluate(op, base.radix, o1, o2))
+                }
+            }
         }
     }
 
@@ -197,10 +244,10 @@ fun evaluate(expression: String) : Operand {
     ** it is the result of the calculation. Otherwise, we
     ** have too many tokens and therefore an error...
     */
-    var result: Operand
+    var result: String
 
     if (stack.size == 1) {
-        result = Operand(stack.pop())
+        result = stack.pop()
     }
     else {
         throw Exception("Too many arguments left on stack")

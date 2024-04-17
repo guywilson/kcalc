@@ -1,18 +1,8 @@
 package com.guy.calc
 
-import com.guy.calc.Operand
 import java.math.BigDecimal
-
-fun getOperation(ch: Char) : Operation {
-    when (ch) {
-        '+' -> return Operation.ADD
-        '-' -> return Operation.SUBTRACT
-        '*' -> return Operation.MULTIPLY
-        '/' -> return Operation.DIVIDE
-        '%' -> return Operation.MOD
-        else -> return Operation.UNKNOWN
-    }
-}
+import java.math.RoundingMode
+import java.math.BigInteger
 
 enum class Operation {
     ADD, 
@@ -23,7 +13,7 @@ enum class Operation {
     UNKNOWN
 }
 
-open class Operator constructor(token: Char) : Token(token) {
+open class OperationUtils constructor() {
     companion object StaticMembers {
         public var toChar: (Operation) -> Char = {
             operation: Operation -> 
@@ -36,68 +26,67 @@ open class Operator constructor(token: Char) : Token(token) {
                     else                -> '0'
                 }
         }
-    }
 
-    val operation: Operation = getOperation(token)
+        public fun getOperation(ch: Char) : Operation {
+            when (ch) {
+                '+' -> return Operation.ADD
+                '-' -> return Operation.SUBTRACT
+                '*' -> return Operation.MULTIPLY
+                '/' -> return Operation.DIVIDE
+                '%' -> return Operation.MOD
+                else -> return Operation.UNKNOWN
+            }
+        }
 
-    constructor(op: Operation) : this(Operator.toChar(op)) {
+        public fun getPrecedence(operation: Operation) : Int {
+            when (operation) {
+                Operation.ADD       -> return 2
+                Operation.SUBTRACT  -> return 2
+                Operation.MULTIPLY  -> return 3
+                Operation.DIVIDE    -> return 3
+                Operation.MOD       -> return 3
+                else                -> return 0
+            }
+        }
 
-    }
-
-    private fun add(o1: Operand, o2: Operand) : Operand {
-        return Operand(o1.decimalValue.add(o2.decimalValue, Utils.mathContext))
-    }
-
-    private fun subtract(o1: Operand, o2: Operand) : Operand {
-        return Operand(o1.decimalValue.subtract(o2.decimalValue, Utils.mathContext))
-    }
-
-    private fun multiply(o1: Operand, o2: Operand) : Operand {
-        return Operand(o1.decimalValue.multiply(o2.decimalValue, Utils.mathContext))
-    }
-
-    private fun divide(o1: Operand, o2: Operand) : Operand {
-        return Operand(o1.decimalValue.divide(o2.decimalValue, Utils.mathContext))
-    }
-
-    private fun mod(o1: Operand, o2: Operand) : Operand {
-        return Operand(o1.decimalValue.remainder(o2.decimalValue, Utils.mathContext))
-    }
-
-    public fun evaluate(o1: Operand, o2: Operand) : Operand {
-        when (operation) {
-            Operation.ADD       -> return add(o1, o2)
-            Operation.SUBTRACT  -> return subtract(o1, o2)
-            Operation.MULTIPLY  -> return multiply(o1, o2)
-            Operation.DIVIDE    -> return divide(o1, o2)
-            Operation.MOD       -> return mod(o1, o2)
-            else                -> return Operand(0.0)
+        public fun toString(operation: Operation) : String {
+            when (operation) {
+                Operation.ADD       -> return "+"
+                Operation.SUBTRACT  -> return "-"
+                Operation.MULTIPLY  -> return "*"
+                Operation.DIVIDE    -> return "/"
+                Operation.MOD       -> return "%"
+                else                -> return "0"
+            }
         }
     }
-
-    public fun getPrecedence() : Int {
-        when (operation) {
-            Operation.ADD       -> return 2
-            Operation.SUBTRACT  -> return 2
-            Operation.MULTIPLY  -> return 3
-            Operation.DIVIDE    -> return 3
-            Operation.MOD       -> return 3
-            else                -> return 0
+}
+open class DecimalOperation constructor() {
+    companion object StaticMembers {
+        public fun evaluate(operation: Operation, o1: BigDecimal, o2: BigDecimal) : String {
+            when (operation) {
+                Operation.ADD       -> return o1.add(o2, Utils.mathContext).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
+                Operation.SUBTRACT  -> return o1.subtract(o2, Utils.mathContext).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
+                Operation.MULTIPLY  -> return o1.multiply(o2, Utils.mathContext).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
+                Operation.DIVIDE    -> return o1.divide(o2, Utils.mathContext).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
+                Operation.MOD       -> return o1.remainder(o2, Utils.mathContext).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
+                else                -> return BigDecimal(0).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
+            }
         }
     }
+}
 
-    public override fun toChar() : Char {
-        return Operator.toChar(this.operation)
-    }
-
-    public override fun toString() : String {
-        when (operation) {
-            Operation.ADD       -> return "+"
-            Operation.SUBTRACT  -> return "-"
-            Operation.MULTIPLY  -> return "*"
-            Operation.DIVIDE    -> return "/"
-            Operation.MOD       -> return "%"
-            else                -> return "0"
+open class IntegerOperation constructor() {
+    companion object StaticMembers {
+        public fun evaluate(operation: Operation, radix: Int, o1: BigInteger, o2: BigInteger) : String {
+            when (operation) {
+                Operation.ADD       -> return o1.add(o2).toString(radix).uppercase()
+                Operation.SUBTRACT  -> return o1.subtract(o2).toString(radix).uppercase()
+                Operation.MULTIPLY  -> return o1.multiply(o2).toString(radix).uppercase()
+                Operation.DIVIDE    -> return o1.divide(o2).toString(radix).uppercase()
+                Operation.MOD       -> return o1.remainder(o2).toString(radix).uppercase()
+                else                -> return BigInteger("0", radix).toString(radix).uppercase()
+            }
         }
     }
 }

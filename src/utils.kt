@@ -3,15 +3,15 @@ package com.guy.calc
 import java.math.MathContext
 import java.math.RoundingMode
 
-fun ArrayDeque<Token>.push(item: Token) {
+fun ArrayDeque<Char>.push(item: Char) {
     this.addFirst(item)
 }
 
-fun ArrayDeque<Token>.pop() : Token {
+fun ArrayDeque<Char>.pop() : Char {
     return this.removeFirst()
 }
 
-fun ArrayDeque<Token>.peek() : Token {
+fun ArrayDeque<Char>.peek() : Char {
     return this.first()
 }
 
@@ -41,7 +41,7 @@ class Utils {
 
         public var isWhiteSpace: (Char) -> Boolean = { ch: Char -> ch in " \t\n\r" }
         public var isToken: (Char) ->      Boolean = { ch: Char -> ch in " \t\n\r+-*/%()[]{}" }
-        public var isDigit: (Char) ->      Boolean = { ch: Char -> ch in "0123456789" }
+        public var isDigit: (Char) ->      Boolean = { ch: Char -> ch in "0123456789abcdefABCDEF" }
         public var isBrace: (Char) ->      Boolean = { ch: Char -> ch in "([{}])" }
         public var isBraceLeft: (Char) ->  Boolean = { ch: Char -> ch in "([{" }
         public var isBraceRight: (Char) -> Boolean = { ch: Char -> ch in "}])" }
