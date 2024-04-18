@@ -12,6 +12,7 @@ import org.jline.utils.InfoCmp.Capability
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.math.BigInteger
+import com.guy.calc.Associativity
 
 enum class Base(val radix: Int) {
     DECIMAL(10),
@@ -130,7 +131,14 @@ fun convertToRPN(expr: String, base: Base, outQueue: ArrayDeque<String>) {
 
                 var o2: Char = stackToken
 
-                if (OperationUtils.getPrecedence(OperationUtils.getOperation(o1)) <= OperationUtils.getPrecedence(OperationUtils.getOperation(o2))) {
+                val assoc: Associativity = 
+                                OperationUtils.getAssociativity(OperationUtils.getOperation(o1))
+                val o1Prescedence: Int = OperationUtils.getPrecedence(OperationUtils.getOperation(o1))
+                val o2Prescedence: Int = OperationUtils.getPrecedence(OperationUtils.getOperation(o2))
+
+                if ((assoc == Associativity.LEFT && o1Prescedence <= o2Prescedence) ||
+                    (assoc == Associativity.RIGHT && o1Prescedence < o2Prescedence))
+                {
                     o2 = operatorStack.pop()[0]
                     outQueue.add(o2.toString())
                 }

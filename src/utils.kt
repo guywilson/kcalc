@@ -24,6 +24,15 @@ fun ArrayDeque<String>.poll() : String {
 class Utils {
     companion object StaticMembers {
         private const val DEFAULT_SCALE: Int = 2
+
+        private const val WHITESPACE: String = " \t\n\r"
+        private const val DIGITS: String = "0123456789abcdefABCDEF"
+        private const val OPERATORS: String = "+-*/%^&|~<>"
+        private const val LEFT_BRACES: String = "([{"
+        private const val RIGHT_BRACES: String = "}])"
+        private const val BRACES: String = "$LEFT_BRACES$RIGHT_BRACES"
+        private const val TOKENS: String = "$WHITESPACE$OPERATORS$BRACES"
+
         public const val MAX_PRECISION: Int = 80
     
         public var mathContext: MathContext = 
@@ -37,13 +46,13 @@ class Utils {
             BigDecimal(180.0, Utils.mathContext)
                 .divide(BigDecimal(Constant.evaluate("pi")), MAX_PRECISION, RoundingMode.HALF_UP)
 
-        public var isWhiteSpace: (Char) -> Boolean = { ch: Char -> ch in " \t\n\r" }
-        public var isToken: (Char) ->      Boolean = { ch: Char -> ch in " \t\n\r+-*/%^&|~()[]{}" }
-        public var isDigit: (Char) ->      Boolean = { ch: Char -> ch in "0123456789abcdefABCDEF" }
-        public var isBrace: (Char) ->      Boolean = { ch: Char -> ch in "([{}])" }
-        public var isBraceLeft: (Char) ->  Boolean = { ch: Char -> ch in "([{" }
-        public var isBraceRight: (Char) -> Boolean = { ch: Char -> ch in "}])" }
-        public var isOperator: (Char) ->   Boolean = { ch: Char -> ch in "+-*/%&|~^" }
+        public var isWhiteSpace: (Char) -> Boolean = { ch: Char -> ch in WHITESPACE }
+        public var isToken: (Char) ->      Boolean = { ch: Char -> ch in TOKENS }
+        public var isDigit: (Char) ->      Boolean = { ch: Char -> ch in DIGITS }
+        public var isBrace: (Char) ->      Boolean = { ch: Char -> ch in BRACES }
+        public var isBraceLeft: (Char) ->  Boolean = { ch: Char -> ch in LEFT_BRACES }
+        public var isBraceRight: (Char) -> Boolean = { ch: Char -> ch in RIGHT_BRACES }
+        public var isOperator: (Char) ->   Boolean = { ch: Char -> ch in OPERATORS }
 
         public fun isOperand(token: String) : Boolean {
             var isop: Boolean = true
