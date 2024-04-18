@@ -224,7 +224,7 @@ fun evaluate(expression: String, base: Base) : String {
         }
         else if (Utils.isConstant(t)) {
             when (base) {
-                Base.DECIMAL    -> stack.push(t)
+                Base.DECIMAL    -> stack.push(Constant.evaluate(t))
                 else            -> throw Exception("Constants are only supported in DECimal mode")
             }
         }
@@ -279,7 +279,7 @@ fun evaluate(expression: String, base: Base) : String {
     var result: String
 
     if (stack.size == 1) {
-        result = stack.pop()
+        result = BigDecimal(stack.pop()).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
     }
     else {
         throw Exception("Too many arguments left on stack")

@@ -22,6 +22,8 @@ enum class Function {
     LOG,
     LOGN,
     FACT,
+    RAD,
+    DEG,
     UNKNOWN
 }
 
@@ -29,28 +31,30 @@ open class FunctionUtils constructor() {
     companion object StaticMembers {
         public fun evaluate(function: Function, o1: BigDecimal) : String {
             when (function) {
-                Function.SIN    -> return BigDecimal(sin(Utils.toRadians(o1).toDouble())).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.COS    -> return BigDecimal(cos(Utils.toRadians(o1).toDouble())).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.TAN    -> return BigDecimal(tan(Utils.toRadians(o1).toDouble())).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.ASIN   -> return Utils.toDegrees(BigDecimal(asin(o1.toDouble()))).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.ACOS   -> return Utils.toDegrees(BigDecimal(acos(o1.toDouble()))).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.ATAN   -> return Utils.toDegrees(BigDecimal(atan(o1.toDouble()))).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.SINH   -> return BigDecimal(sinh(o1.toDouble())).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.COSH   -> return BigDecimal(cosh(o1.toDouble())).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.TANH   -> return BigDecimal(tanh(o1.toDouble())).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.ASINH  -> return BigDecimal(asinh(o1.toDouble())).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.ACOSH  -> return BigDecimal(acosh(o1.toDouble())).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.ATANH  -> return BigDecimal(atanh(o1.toDouble())).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.SQRT   -> return BigDecimal(sqrt(o1.toDouble())).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.LOG    -> return BigDecimal(log10(o1.toDouble())).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.LOGN   -> return BigDecimal(log(o1.toDouble(), 10.0)).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Function.FACT   -> return factorial(o1).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                else            -> return BigDecimal.ZERO.setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
+                Function.SIN    -> return BigDecimal(sin(Utils.toRadians(o1).toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.COS    -> return BigDecimal(cos(Utils.toRadians(o1).toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.TAN    -> return BigDecimal(tan(Utils.toRadians(o1).toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.ASIN   -> return Utils.toDegrees(BigDecimal(asin(o1.toDouble()))).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.ACOS   -> return Utils.toDegrees(BigDecimal(acos(o1.toDouble()))).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.ATAN   -> return Utils.toDegrees(BigDecimal(atan(o1.toDouble()))).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.SINH   -> return BigDecimal(sinh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.COSH   -> return BigDecimal(cosh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.TANH   -> return BigDecimal(tanh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.ASINH  -> return BigDecimal(asinh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.ACOSH  -> return BigDecimal(acosh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.ATANH  -> return BigDecimal(atanh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.SQRT   -> return BigDecimal(sqrt(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.LOG    -> return BigDecimal(log10(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.LOGN   -> return BigDecimal(log(o1.toDouble(), 10.0)).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.FACT   -> return factorial(o1).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.RAD    -> return Utils.toRadians(o1).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Function.DEG    -> return Utils.toDegrees(o1).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                else            -> return BigDecimal.ZERO.setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
             }
         }
 
         public fun getFunction(token: String) : Function {
-            when (token) {
+            when (token.lowercase()) {
                 "sin"   -> return Function.SIN
                 "cos"   -> return Function.COS
                 "tan"   -> return Function.TAN
@@ -67,6 +71,8 @@ open class FunctionUtils constructor() {
                 "log"   -> return Function.LOG
                 "ln"    -> return Function.LOGN
                 "fact"  -> return Function.FACT
+                "rad"   -> return Function.FACT
+                "deg"   -> return Function.FACT
                 else    -> return Function.UNKNOWN
             }
         }

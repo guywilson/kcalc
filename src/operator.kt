@@ -65,12 +65,12 @@ open class DecimalOperation constructor() {
     companion object StaticMembers {
         public fun evaluate(operation: Operation, o1: BigDecimal, o2: BigDecimal) : String {
             when (operation) {
-                Operation.ADD       -> return o1.add(o2, Utils.mathContext).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Operation.SUBTRACT  -> return o1.subtract(o2, Utils.mathContext).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Operation.MULTIPLY  -> return o1.multiply(o2, Utils.mathContext).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Operation.DIVIDE    -> return o1.divide(o2, Utils.mathContext).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                Operation.MOD       -> return o1.remainder(o2, Utils.mathContext).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-                else                -> return BigDecimal(0).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
+                Operation.ADD       -> return o1.add(o2, Utils.mathContext).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Operation.SUBTRACT  -> return o1.subtract(o2, Utils.mathContext).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Operation.MULTIPLY  -> return o1.multiply(o2, Utils.mathContext).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Operation.DIVIDE    -> return o1.divide(o2, Utils.mathContext).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                Operation.MOD       -> return o1.remainder(o2, Utils.mathContext).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                else                -> return BigDecimal(0).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
             }
         }
     }

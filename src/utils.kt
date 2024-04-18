@@ -24,18 +24,18 @@ fun ArrayDeque<String>.poll() : String {
 class Utils {
     companion object StaticMembers {
         private const val DEFAULT_SCALE: Int = 2
-        private const val MAX_DISPLAY_PRECISION: Int = 80
+        public const val MAX_PRECISION: Int = 80
     
         public var mathContext: MathContext = 
-                    MathContext(MAX_DISPLAY_PRECISION, RoundingMode.HALF_UP)
+                    MathContext(MAX_PRECISION, RoundingMode.HALF_UP)
 
         private var degreesToRadians: BigDecimal = 
-            BigDecimal(PI, Utils.mathContext)
-                .divide(BigDecimal(180.0, Utils.mathContext), MAX_DISPLAY_PRECISION, RoundingMode.HALF_UP)
+            BigDecimal(Constant.evaluate("pi"))
+                .divide(BigDecimal(180.0, Utils.mathContext), MAX_PRECISION, RoundingMode.HALF_UP)
         
         private var radiansToDegrees: BigDecimal = 
             BigDecimal(180.0, Utils.mathContext)
-                .divide(BigDecimal(PI, Utils.mathContext), MAX_DISPLAY_PRECISION, RoundingMode.HALF_UP)
+                .divide(BigDecimal(Constant.evaluate("pi")), MAX_PRECISION, RoundingMode.HALF_UP)
 
         public var isWhiteSpace: (Char) -> Boolean = { ch: Char -> ch in " \t\n\r" }
         public var isToken: (Char) ->      Boolean = { ch: Char -> ch in " \t\n\r+-*/%^&|~()[]{}" }
