@@ -24,7 +24,7 @@ enum class Associativity {
     RIGHT
 }
 
-open class OperationUtils constructor() {
+open class OperationUtils {
     companion object StaticMembers {
         public var toChar: (Operation) -> Char = {
             operation: Operation -> 
@@ -113,9 +113,12 @@ open class OperationUtils constructor() {
         }
     }
 }
-open class DecimalOperation constructor() {
+open class DecimalOperation {
     companion object StaticMembers {
         public fun evaluate(operation: Operation, o1: BigDecimal, o2: BigDecimal) : String {
+            val op: String = OperationUtils.toString(operation)
+            Utils.debug("Evaluate $o1 $op $o2")
+
             when (operation) {
                 Operation.ADD       -> return o1.add(o2, Utils.mathContext).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
                 Operation.SUBTRACT  -> return o1.subtract(o2, Utils.mathContext).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
@@ -134,9 +137,12 @@ open class DecimalOperation constructor() {
     }
 }
 
-open class IntegerOperation constructor() {
+open class IntegerOperation {
     companion object StaticMembers {
         public fun evaluate(operation: Operation, radix: Int, o1: BigInteger, o2: BigInteger) : String {
+            val op: String = OperationUtils.toString(operation)
+            Utils.debug("Evaluate $o1 $op $o2")
+            
             when (operation) {
                 Operation.ADD       -> return o1.add(o2).toString(radix).uppercase()
                 Operation.SUBTRACT  -> return o1.subtract(o2).toString(radix).uppercase()

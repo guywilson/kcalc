@@ -26,7 +26,7 @@ class Utils {
         private const val DEFAULT_SCALE: Int = 2
 
         private const val WHITESPACE: String = " \t\n\r"
-        private const val DIGITS: String = "0123456789abcdefABCDEF"
+        private const val DIGITS: String = "-.0123456789abcdefABCDEF"
         private const val OPERATORS: String = "+-*/%^&|~<>"
         private const val LEFT_BRACES: String = "([{"
         private const val RIGHT_BRACES: String = "}])"
@@ -142,6 +142,33 @@ class Utils {
             }
         }
 
+        public fun getPrescedence(token: String) : Int {
+            if (isOperator(token[0])) {
+                return OperationUtils.getPrecedence(OperationUtils.getOperation(token[0]))
+            }
+            else if (isFunction(token)) {
+                return Function.getPrescedence()
+            }
+
+            return 0;
+        }
+
+        public fun getAssociativity(token: String) : Associativity {
+            if (isOperator(token[0])) {
+                return OperationUtils.getAssociativity(OperationUtils.getOperation(token[0]))
+            }
+            else {
+                return Associativity.LEFT
+            }
+        }
+
+        public fun debug(message: String) {
+            if (isDebug) {
+                println(message)
+            }
+        }
+        
         public var scale: Int = DEFAULT_SCALE
+        public var isDebug: Boolean = false
     }
 }

@@ -5,9 +5,11 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.math.BigInteger
 
-open class Function constructor() {
+open class Function {
     companion object StaticMembers {
         public fun evaluate(token: String, o1: BigDecimal) : String {
+            Utils.debug("Evaluate $token($o1)")
+
             when (token.lowercase()) {
                 "sin"   -> return BigDecimal(sin(Utils.toRadians(o1).toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
                 "cos"   -> return BigDecimal(cos(Utils.toRadians(o1).toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
@@ -30,6 +32,14 @@ open class Function constructor() {
                 "mem"   -> return BigDecimal(Utils.memoryRetrieve(o1.toInt())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
                 else    -> return BigDecimal.ZERO.setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
             }
+        }
+
+        public fun getPrescedence() : Int {
+            return 5
+        }
+
+        public fun getAssociativity() : Associativity {
+            return Associativity.LEFT
         }
 
         private fun factorial(value: BigDecimal) : BigDecimal {

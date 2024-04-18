@@ -14,8 +14,6 @@ import java.math.RoundingMode
 import java.math.BigInteger
 import java.util.Calendar
 import java.time.Year
-import com.guy.calc.evaluate
-//import com.guy.calc.Associativity
 
 enum class Base(val radix: Int) {
     DECIMAL(10),
@@ -130,6 +128,10 @@ fun main() {
         else if (calculation.startsWith("help", false) || calculation.startsWith("?")) {
             printHelp()
         }
+        else if (calculation.startsWith("test", false)) {
+            runTests()
+            go = false
+        }
         else if (calculation.startsWith("dec", false)) {
             result = BigDecimal(BigInteger(result, base.radix)).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
             println("result = $result")
@@ -205,209 +207,52 @@ fun main() {
     }
 }
 
-fun convertToRPN(expr: String, base: Base, outQueue: ArrayDeque<String>) {
-    var operatorStack: ArrayDeque<String> = ArrayDeque<String>(24)
+fun testEvaluate(calculation: String, base: Base, expected: String) : Boolean {
+    var result: String = evaluate(calculation, base)
 
-    var tok: Tokeniser = Tokeniser(expr)
+    result = BigDecimal(result).setScale(2, RoundingMode.HALF_UP).toPlainString()
 
-    while (tok.hasMoreTokens()) {
-        val token: String = tok.nextToken()
-
-        // println("Got token: '$token'")
-
-        if (Utils.isOperand(token)) {
-            outQueue.add(token)
-        }
-        else if (Utils.isConstant(token)) {
-            when (base) {
-                Base.DECIMAL    -> outQueue.add(token)
-                else            -> throw Exception("Constants are only supported in DECimal mode")
-            }
-        }
-        else if (Utils.isFunction(token)) {
-            operatorStack.push(token)
-        }
-        /*
-        ** If the token is an operator, o1, then:
-        **	while there is an operator token o2, at the top of the operator stack
-        **	and either
-        **	o1 is left-associative and its precedence is less than or equal to that
-        **	of o2, or
-        **	o1 is right associative, and has precedence less than that of o2,
-        **	pop o2 off the operator stack, onto the output queue;
-        **	at the end of iteration push o1 onto the operator stack.
-        */
-        else if (Utils.isOperator(token[0])) {
-            val o1: Char = token[0]
-
-            while (!operatorStack.isEmpty()) {
-                var stackToken: Char = operatorStack.peek()[0]
-
-                if (!Utils.isOperator(stackToken)) {
-                    break
-                }
-
-                var o2: Char = stackToken
-
-                val assoc: Associativity = 
-                                OperationUtils.getAssociativity(OperationUtils.getOperation(o1))
-                val o1Prescedence: Int = OperationUtils.getPrecedence(OperationUtils.getOperation(o1))
-                val o2Prescedence: Int = OperationUtils.getPrecedence(OperationUtils.getOperation(o2))
-
-                if ((assoc == Associativity.LEFT && o1Prescedence <= o2Prescedence) ||
-                    (assoc == Associativity.RIGHT && o1Prescedence < o2Prescedence))
-                {
-                    o2 = operatorStack.pop()[0]
-                    outQueue.add(o2.toString())
-                }
-                else {
-                    break
-                }
-            }
-
-            operatorStack.push(o1.toString())
-        }
-        else if (Utils.isBrace(token[0])) {
-            /*
-            ** If the token is a left parenthesis (i.e. "("), then push it onto the stack.
-            */
-            if (Utils.isBraceLeft(token[0])) {
-                operatorStack.push(token)
-            }
-            else {
-                /*
-                ** If the token is a right parenthesis (i.e. ")"):
-                ** Until the token at the top of the stack is a left parenthesis, pop
-                ** operators off the stack onto the output queue.
-                ** Pop the left parenthesis from the stack, but not onto the output queue.
-                ** If the token at the top of the stack is a function token, pop it onto
-                ** the output queue.
-                ** If the stack runs out without finding a left parenthesis, then there
-                ** are mismatched parentheses.
-                */
-                var foundLeftParenthesis: Boolean = false
-
-                while (!operatorStack.isEmpty()) {
-                    val stackToken: Char = operatorStack.pop()[0]
-
-                    // val ch: Char = stackToken.toChar()
-                    // println("Popped token '$ch' off the stack")
-
-                    if (Utils.isBrace(stackToken)) {
-                        if (Utils.isBraceLeft(stackToken)) {
-                            foundLeftParenthesis = true
-                            break
-                        }
-                    }
-                    else {
-                        outQueue.add(stackToken.toString())
-                    }
-                }
-
-                if (!foundLeftParenthesis) {
-                    /*
-                    ** If we've got here, we must have unmatched parenthesis...
-                    */
-                    throw Exception("Failed to find left parenthesis on operator stack")
-                }
-            }
-        }
+    if (result.compareTo(expected) == 0) {
+        println("**** Success :) - '$calculation': Expected: '$expected', got: '$result'")
+        return true
     }
-
-    /*
-    ** While there are still operator tokens in the stack:
-    ** If the operator token on the top of the stack is a parenthesis,
-    ** then there are mismatched parentheses.
-    ** Pop the operator onto the output queue.
-    */
-    while (!operatorStack.isEmpty()) {
-        val op: String = operatorStack.pop()
-
-        if (Utils.isBrace(op[0])) {
-            /*
-            ** If we've got here, we must have unmatched parenthesis...
-            */
-            throw Exception("Found too many parenthesis on operator stack")
-        }
-        else {
-            outQueue.add(op)
-        }
+    else {
+        println("**** Failed :( - '$calculation': Expected: '$expected', got: '$result'")
+        return false
     }
 }
 
-fun evaluate(expression: String, base: Base) : String {
-    var queue: ArrayDeque<String> = ArrayDeque<String>(25)
+fun runTests() {
+    var numTestsPassed: Int = 0
+    var numTestsFailed: Int = 0
+    var totalTestsRun: Int = 0
 
-    convertToRPN(expression, base, queue)
+    val testMap = mapOf(
+                        "2 + (3 * 4) ^ 2 - 13" to "133.00",
+                        "12 - ((2 * 3) - (8 / 2) / 0.5) / 12.653" to "12.16",
+                        "2 ^ 16 - 1" to "65535.00",
+                        "(((((((1 + 2 * 3)-2)*4)/2)-12)+261)/12) - 5.25" to "16.33",
+                        "pi + sin(45 + 45)" to "4.14",
+                        "pi * (2 ^ 2)" to "12.57",
+                        "3 + 4/(2 * 3 * 4) - 4/(4 * 5 * 6) + 4/(6 * 7 * 8) - 4/(8 * 9 * 10) + 4/(10 * 11 * 12)" to "3.14",
+                        "84 * -15 + sin(47)" to "-1259.27",
+                        "16 / (3 - 5 + 8) * (3 + 5 - 4)" to "10.67",
+                        "sin(90) * cos(45) * tan(180) + asin(1) + acos(0) + atan(25)" to "267.71",
+                        "asin(sin(90)) + acos(cos(90))" to "180.00")
+    
+    Utils.scale = 16
 
-    var stack: ArrayDeque<String> = ArrayDeque<String>(25)
-
-    while (!queue.isEmpty()) {
-        val t: String = queue.poll()
-
-        if (Utils.isOperand(t)) {
-            stack.push(t)
-        }
-        else if (Utils.isConstant(t)) {
-            when (base) {
-                Base.DECIMAL    -> stack.push(Constant.evaluate(t))
-                else            -> throw Exception("Constants are only supported in DECimal mode")
-            }
-        }
-        else if (Utils.isOperator(t[0])) {
-            if (stack.size < 2) {
-                throw Exception("Too few arguments for operator")
-            }
-
-            when (base) {
-                Base.DECIMAL -> {
-                    val o2: BigDecimal = BigDecimal(stack.pop(), Utils.mathContext)
-                    val o1: BigDecimal = BigDecimal(stack.pop(), Utils.mathContext)
-
-                    val op: Operation = OperationUtils.getOperation(t[0])
-
-                    stack.push(DecimalOperation.evaluate(op, o1, o2))
-                }
-                else -> {
-                    val o2: BigInteger = BigInteger(stack.pop(), base.radix)
-                    val o1: BigInteger = BigInteger(stack.pop(), base.radix)
-
-                    val op: Operation = OperationUtils.getOperation(t[0])
-
-                    stack.push(IntegerOperation.evaluate(op, base.radix, o1, o2))
-                }
-            }
-        }
-        else if (Utils.isFunction(t)) {
-            when (base) {
-                Base.DECIMAL -> {
-                    val o1: BigDecimal = BigDecimal(stack.pop(), Utils.mathContext)
-
-                    stack.push(Function.evaluate(t, o1))
-                }
-                else -> {
-                    throw Exception("Functions are only supported in DECimal mode")
-                }
-            }
+    for (t in testMap) {
+        if (testEvaluate(t.key, Base.DECIMAL, t.value)) {
+            numTestsPassed++
         }
         else {
-            throw Exception("Invalid token $t on queue")
+            numTestsFailed++
         }
+
+        totalTestsRun++
     }
 
-    /*
-    ** If there is one and only one item left on the stack,
-    ** it is the result of the calculation. Otherwise, we
-    ** have too many tokens and therefore an error...
-    */
-    var result: String
-
-    if (stack.size == 1) {
-        result = BigDecimal(stack.pop()).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
-    }
-    else {
-        throw Exception("Too many arguments left on stack")
-    }
-
-    return result
+    println("Test results: $numTestsFailed failed, $numTestsPassed passed out of $totalTestsRun total")
+    println()
 }
