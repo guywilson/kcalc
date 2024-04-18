@@ -132,6 +132,11 @@ fun main() {
             runTests()
             go = false
         }
+        else if (calculation.startsWith("cls") || calculation.startsWith("clear")) {
+            terminal.puts(Capability.clear_screen);
+
+            printBanner()
+        }
         else if (calculation.startsWith("dec", false)) {
             result = BigDecimal(BigInteger(result, base.radix)).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
             println("result = $result")

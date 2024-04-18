@@ -43,14 +43,15 @@ open class Function {
         }
 
         private fun factorial(value: BigDecimal) : BigDecimal {
-            var intValue: BigInteger = value.toBigInteger().abs()
+            var index: BigInteger = value.toBigInteger().abs().subtract(BigInteger.ONE)
 
-            var result: BigInteger = BigInteger.ZERO
+            var result: BigInteger = value.toBigInteger()
 
-            while (intValue.compareTo(BigInteger.ZERO) > 0) {
-                result = intValue.multiply(intValue.subtract(BigInteger.ONE))
+            while (index.compareTo(BigInteger.ZERO) > 0) {
+                result = result.multiply(index)
+                index = index.subtract(BigInteger.ONE)
 
-                intValue = intValue.subtract(BigInteger.ONE)
+                Utils.debug("Result: $result")
             }
 
             return BigDecimal(result)
