@@ -14,6 +14,7 @@ import java.math.RoundingMode
 import java.math.BigInteger
 import java.util.Calendar
 import java.time.Year
+import com.guy.calc.evaluate
 //import com.guy.calc.Associativity
 
 enum class Base(val radix: Int) {
@@ -68,6 +69,8 @@ fun printHelp() {
     println("\tlog(x)\treturn the log of x")
     println("\tln(x)\treturn the natural log of x")
     println("\tfact(x)\treturn the factorial of x")
+    println("\trad(degrees)\treturn the value of degrees in radians")
+    println("\tdeg(radians)\treturn the value of radians in degrees")
     println("\tmem(n)\tthe value in memory location n, where n is 0 - 9")
     println()
     println("Constants supported:")
@@ -83,6 +86,9 @@ fun printHelp() {
     println("\tbin\tSwitch to binary mode")
     println("\toct\tSwitch to octal mode")
     println("\tsetpn\tSet the precision to n")
+    println("\tmemstn\tStore the last result in memory location n")
+    println("\tmemclrn\tClear the memory location n")
+    println("\tlistmem\tList all memory locations")
     println("\thelp\tThis help text")
     println("\ttest\tRun a self test of the calculator")
     println("\tversion\tPrint the calculator version")
@@ -105,6 +111,7 @@ fun main() {
 
     var go: Boolean = true
     var base: Base = Base.DECIMAL
+    var result: String = "0.0"
 
     while (go) {
         val baseString: String = 
@@ -124,28 +131,76 @@ fun main() {
             printHelp()
         }
         else if (calculation.startsWith("dec", false)) {
+            result = BigDecimal(BigInteger(result, base.radix)).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()
+            println("result = $result")
+
             base = Base.DECIMAL
         }
         else if (calculation.startsWith("hex", false)) {
+            result = result.substring(0, result.indexOf('.'))
+            result = BigInteger(result, base.radix).toString(Base.HEXADECIMAL.radix).uppercase()
+            println("result = $result")
+
             base = Base.HEXADECIMAL
         }
         else if (calculation.startsWith("oct", false)) {
+            result = result.substring(0, result.indexOf('.'))
+            result = BigInteger(result, base.radix).toString(Base.OCTAL.radix).uppercase()
+            println("result = $result")
+
             base = Base.OCTAL
         }
         else if (calculation.startsWith("bin", false)) {
+            result = result.substring(0, result.indexOf('.'))
+            result = BigInteger(result, base.radix).toString(Base.BINARY.radix).uppercase()
+            println("result = $result")
+
             base = Base.BINARY
         }
         else if (calculation.startsWith("setp", false)) {
             var s: Int? = calculation.substring(4).toIntOrNull()
 
             if (s != null) {
-                Utils.scale = s
+                if (s <= Utils.MAX_PRECISION) {
+                    Utils.scale = s
+                }
+                else {
+                    println("Precision must be between 1 and 80")
+                    println()
+                }
+            }
+        }
+        else if (calculation.startsWith("memst", false)) {
+            var m: Int? = calculation.substring(5).toIntOrNull()
+
+            if (m != null) {
+                if (m < Utils.MEMORY_SLOTS) {
+                    Utils.memoryStore(result, m)
+                }
+            }
+        }
+        else if (calculation.startsWith("memclr", false)) {
+            var m: Int? = calculation.substring(6).toIntOrNull()
+
+            if (m != null) {
+                if (m < Utils.MEMORY_SLOTS) {
+                    Utils.memoryClear(m)
+                }
+            }
+        }
+        else if (calculation.startsWith("listmem", false)) {
+            for (i in 0..Utils.MEMORY_SLOTS - 1) {
+                val m: String = Utils.memoryRetrieve(i)
+
+                println("\tmem $i -> $m")
             }
         }
         else {
-            var result: String = evaluate(calculation, base)
+            if (calculation.length > 0) {
+                result = evaluate(calculation, base)
 
-            println("$calculation = $result")
+                println("$calculation = $result")
+            }
         }
     }
 }

@@ -27,6 +27,7 @@ open class Function constructor() {
                 "fact"  -> return factorial(o1).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
                 "rad"   -> return Utils.toRadians(o1).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
                 "deg"   -> return Utils.toDegrees(o1).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "mem"   -> return BigDecimal(Utils.memoryRetrieve(o1.toInt())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
                 else    -> return BigDecimal.ZERO.setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
             }
         }

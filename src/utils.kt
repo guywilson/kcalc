@@ -34,6 +34,7 @@ class Utils {
         private const val TOKENS: String = "$WHITESPACE$OPERATORS$BRACES"
 
         public const val MAX_PRECISION: Int = 80
+        public const val MEMORY_SLOTS: Int = 10
     
         public var mathContext: MathContext = 
                     MathContext(MAX_PRECISION, RoundingMode.HALF_UP)
@@ -45,6 +46,8 @@ class Utils {
         private var radiansToDegrees: BigDecimal = 
             BigDecimal(180.0, Utils.mathContext)
                 .divide(BigDecimal(Constant.evaluate("pi")), MAX_PRECISION, RoundingMode.HALF_UP)
+
+        private var memory = Array<String>(10) {"0.00"}
 
         public var isWhiteSpace: (Char) -> Boolean = { ch: Char -> ch in WHITESPACE }
         public var isToken: (Char) ->      Boolean = { ch: Char -> ch in TOKENS }
@@ -110,6 +113,33 @@ class Utils {
 
         public fun toDegrees(radians: BigDecimal) : BigDecimal {
             return radians.multiply(radiansToDegrees, Utils.mathContext)
+        }
+
+        public fun memoryStore(result: String, location: Int) {
+            if (location >= 0 && location < MEMORY_SLOTS) {
+                memory[location] = result
+            }
+            else {
+                throw IndexOutOfBoundsException()
+            }
+        }
+
+        public fun memoryClear(location: Int) {
+            if (location >= 0 && location < MEMORY_SLOTS) {
+                memory[location] = "0.00"
+            }
+            else {
+                throw IndexOutOfBoundsException()
+            }
+        }
+
+        public fun memoryRetrieve(location: Int) : String {
+            if (location >= 0 && location < MEMORY_SLOTS) {
+                return memory[location]
+            }
+            else {
+                throw IndexOutOfBoundsException()
+            }
         }
 
         public var scale: Int = DEFAULT_SCALE
