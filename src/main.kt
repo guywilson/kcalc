@@ -12,7 +12,9 @@ import org.jline.utils.InfoCmp.Capability
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.math.BigInteger
-import com.guy.calc.Associativity
+import java.util.Calendar
+import java.time.Year
+//import com.guy.calc.Associativity
 
 enum class Base(val radix: Int) {
     DECIMAL(10),
@@ -21,14 +23,75 @@ enum class Base(val radix: Int) {
     BINARY(2)
 }
 
-fun printHelp() {
+fun printWarranty() {
+    println("This program comes with ABSOLUTELY NO WARRANTY.")
+    println("This is free software, and you are welcome to redistribute it")
+    println("under certain conditions.")
+    println()
+}
 
+fun printBanner() {
+    val cal:Calendar = Calendar.getInstance()
+    val year: Int = cal.get(Calendar.YEAR)
+
+    println("Welcome to Calc. A cmd line scientific calculator. Copyright © Guy Wilson $year")
+    println("Type a calculation or command at the prompt, type 'help' for info.")
+    println()
+}
+
+fun printHelp() {
+    printBanner()
+    printWarranty()
+
+    println("Operators supported:")
+    println("\t+, -, *, /, %% (Modulo)")
+    println("\t& (AND), | (OR), ~ (XOR)")
+    println("\t< (left shift), > (right shift)")
+    println("\t^ (power, e.g. x to the power of y)")
+    println()
+    println("\tNesting is achieved with braces ()")
+    println()
+    println("Functions supported:")
+    println("\tsin(x)\treturn the sine of the angle x degrees")
+    println("\tcos(x)\treturn the cosine of the angle x degrees")
+    println("\ttan(x)\treturn the tangent of the angle x degrees")
+    println("\tasin(x)\treturn the angle in degrees of arcsine(x)")
+    println("\tacos(x)\treturn the angle in degrees of arccosine(x)")
+    println("\tatan(x)\treturn the angle in degrees of arctangent(x)")
+    println("\tsinh(x)\treturn the hyperbolic sine of the angle x radians")
+    println("\tcosh(x)\treturn the hyperbolic cosine of the angle x radians")
+    println("\ttanh(x)\treturn the hyperbolic tangent of the angle x radians")
+    println("\tasinh(x) return the inverse hyperbolic sine of angle x in radians")
+    println("\tacosh(x) return the inverse hyperbolic cosine of angle x in radians")
+    println("\tatanh(x) return the inverse hyperbolic tangent of angle x in radians")
+    println("\tsqrt(x)\treturn the square root of x")
+    println("\tlog(x)\treturn the log of x")
+    println("\tln(x)\treturn the natural log of x")
+    println("\tfact(x)\treturn the factorial of x")
+    println("\tmem(n)\tthe value in memory location n, where n is 0 - 9")
+    println()
+    println("Constants supported:")
+    println("\tpi\tthe ratio pi")
+    println("\teu\tEulers constant")
+    println("\tg\tThe gravitational constant G")
+    println("\tc\tthe speed of light in a vacuum")
+    println()
+    println("Commands supported:")
+    println("\tmemstn\tStore the last result in memory location n (0 - 9)")
+    println("\tdec\tSwitch to decimal mode")
+    println("\thex\tSwitch to hexadecimal mode")
+    println("\tbin\tSwitch to binary mode")
+    println("\toct\tSwitch to octal mode")
+    println("\tsetpn\tSet the precision to n")
+    println("\thelp\tThis help text")
+    println("\ttest\tRun a self test of the calculator")
+    println("\tversion\tPrint the calculator version")
+    println("\texit\tExit the calculator")
+    println()
 }
 
 fun main() {
-    println("Welcome to Calc. A cmd line scientific calculator. Copyright © Guy Wilson ")
-    println("Type a calculation or command at the prompt, type 'help' for info.")
-    println("")
+    printBanner()
 
     val terminal: Terminal = TerminalBuilder.builder().build()
 
@@ -265,9 +328,7 @@ fun evaluate(expression: String, base: Base) : String {
                 Base.DECIMAL -> {
                     val o1: BigDecimal = BigDecimal(stack.pop(), Utils.mathContext)
 
-                    val function: Function = FunctionUtils.getFunction(t)
-
-                    stack.push(FunctionUtils.evaluate(function, o1))
+                    stack.push(Function.evaluate(t, o1))
                 }
                 else -> {
                     throw Exception("Functions are only supported in DECimal mode")

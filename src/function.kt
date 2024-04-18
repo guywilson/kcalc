@@ -5,75 +5,29 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.math.BigInteger
 
-enum class Function {
-    SIN,
-    COS,
-    TAN,
-    ASIN,
-    ACOS,
-    ATAN,
-    SINH,
-    COSH,
-    TANH,
-    ASINH,
-    ACOSH,
-    ATANH,
-    SQRT,
-    LOG,
-    LOGN,
-    FACT,
-    RAD,
-    DEG,
-    UNKNOWN
-}
-
-open class FunctionUtils constructor() {
+open class Function constructor() {
     companion object StaticMembers {
-        public fun evaluate(function: Function, o1: BigDecimal) : String {
-            when (function) {
-                Function.SIN    -> return BigDecimal(sin(Utils.toRadians(o1).toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.COS    -> return BigDecimal(cos(Utils.toRadians(o1).toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.TAN    -> return BigDecimal(tan(Utils.toRadians(o1).toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.ASIN   -> return Utils.toDegrees(BigDecimal(asin(o1.toDouble()))).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.ACOS   -> return Utils.toDegrees(BigDecimal(acos(o1.toDouble()))).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.ATAN   -> return Utils.toDegrees(BigDecimal(atan(o1.toDouble()))).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.SINH   -> return BigDecimal(sinh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.COSH   -> return BigDecimal(cosh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.TANH   -> return BigDecimal(tanh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.ASINH  -> return BigDecimal(asinh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.ACOSH  -> return BigDecimal(acosh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.ATANH  -> return BigDecimal(atanh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.SQRT   -> return BigDecimal(sqrt(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.LOG    -> return BigDecimal(log10(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.LOGN   -> return BigDecimal(log(o1.toDouble(), 10.0)).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.FACT   -> return factorial(o1).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.RAD    -> return Utils.toRadians(o1).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                Function.DEG    -> return Utils.toDegrees(o1).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-                else            -> return BigDecimal.ZERO.setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
-            }
-        }
-
-        public fun getFunction(token: String) : Function {
+        public fun evaluate(token: String, o1: BigDecimal) : String {
             when (token.lowercase()) {
-                "sin"   -> return Function.SIN
-                "cos"   -> return Function.COS
-                "tan"   -> return Function.TAN
-                "asin"  -> return Function.ASIN
-                "acos"  -> return Function.ACOS
-                "atan"  -> return Function.ATAN
-                "sinh"  -> return Function.SINH
-                "cosh"  -> return Function.COSH
-                "tanh"  -> return Function.TANH
-                "asinh" -> return Function.ASINH
-                "acosh" -> return Function.ACOSH
-                "atanh" -> return Function.ATANH
-                "sqrt"  -> return Function.SQRT
-                "log"   -> return Function.LOG
-                "ln"    -> return Function.LOGN
-                "fact"  -> return Function.FACT
-                "rad"   -> return Function.FACT
-                "deg"   -> return Function.FACT
-                else    -> return Function.UNKNOWN
+                "sin"   -> return BigDecimal(sin(Utils.toRadians(o1).toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "cos"   -> return BigDecimal(cos(Utils.toRadians(o1).toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "tan"   -> return BigDecimal(tan(Utils.toRadians(o1).toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "asin"  -> return Utils.toDegrees(BigDecimal(asin(o1.toDouble()))).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "acos"  -> return Utils.toDegrees(BigDecimal(acos(o1.toDouble()))).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "atan"  -> return Utils.toDegrees(BigDecimal(atan(o1.toDouble()))).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "sinh"  -> return BigDecimal(sinh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "cosh"  -> return BigDecimal(cosh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "tanh"  -> return BigDecimal(tanh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "asinh" -> return BigDecimal(asinh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "acosh" -> return BigDecimal(acosh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "atanh" -> return BigDecimal(atanh(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "sqrt"  -> return BigDecimal(sqrt(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "log"   -> return BigDecimal(log10(o1.toDouble())).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "ln"    -> return BigDecimal(log(o1.toDouble(), 10.0)).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "fact"  -> return factorial(o1).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "rad"   -> return Utils.toRadians(o1).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                "deg"   -> return Utils.toDegrees(o1).setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
+                else    -> return BigDecimal.ZERO.setScale(Utils.MAX_PRECISION, RoundingMode.HALF_UP).toPlainString()
             }
         }
 
