@@ -30,8 +30,8 @@ class Utils {
         private const val OPERATORS: String = "+-*/%^&|~<>"
         private const val LEFT_BRACES: String = "([{"
         private const val RIGHT_BRACES: String = "}])"
-        private const val BRACES: String = "$LEFT_BRACES$RIGHT_BRACES"
-        private const val TOKENS: String = "$WHITESPACE$OPERATORS$BRACES"
+        private const val BRACES: String = LEFT_BRACES + RIGHT_BRACES
+        private const val TOKENS: String = WHITESPACE + OPERATORS + BRACES
 
         public const val MAX_PRECISION: Int = 80
         public const val MEMORY_SLOTS: Int = 10

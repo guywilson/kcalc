@@ -131,6 +131,12 @@ fun main() {
         else if (calculation.startsWith("help", false) || calculation.startsWith("?")) {
             printHelp()
         }
+        else if (calculation.startsWith("dbgon", false)) {
+            Utils.isDebug = true
+        }
+        else if (calculation.startsWith("dbgoff", false)) {
+            Utils.isDebug = false
+        }
         else if (calculation.startsWith("test", false)) {
             runTests()
             go = false
@@ -208,9 +214,14 @@ fun main() {
         }
         else {
             if (calculation.length > 0) {
-                result = evaluate(calculation, base)
+                try {
+                    result = evaluate(calculation, base)
 
-                println("$calculation = $result")
+                    println("$calculation = $result")
+                }
+                catch (e: Exception) {
+                    println("Error evaluating '$calculation': " + e.message)
+                }
             }
         }
     }

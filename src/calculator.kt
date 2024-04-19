@@ -167,16 +167,9 @@ fun evaluate(expression: String, base: Base) : String {
                 throw Exception("Too few arguments for function")
             }
 
-            when (base) {
-                Base.DECIMAL -> {
-                    val o1: BigDecimal = BigDecimal(stack.pop(), Utils.mathContext)
+            val o1: String = stack.pop()
 
-                    stack.push(Function.evaluate(t, o1))
-                }
-                else -> {
-                    throw Exception("Functions are only supported in DECimal mode")
-                }
-            }
+            stack.push(Function.evaluate(t, base, o1))
         }
         else {
             throw Exception("Invalid token $t on queue")
