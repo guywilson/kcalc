@@ -157,24 +157,10 @@ fun evaluate(expression: String, base: Base) : String {
                 throw Exception("Too few arguments for operator")
             }
 
-            when (base) {
-                Base.DECIMAL -> {
-                    val o2: BigDecimal = BigDecimal(stack.pop(), Utils.mathContext)
-                    val o1: BigDecimal = BigDecimal(stack.pop(), Utils.mathContext)
+            val o2: String = stack.pop()
+            val o1: String = stack.pop()
 
-                    val op: Operation = OperationUtils.getOperation(t[0])
-
-                    stack.push(DecimalOperation.evaluate(op, o1, o2))
-                }
-                else -> {
-                    val o2: BigInteger = BigInteger(stack.pop(), base.radix)
-                    val o1: BigInteger = BigInteger(stack.pop(), base.radix)
-
-                    val op: Operation = OperationUtils.getOperation(t[0])
-
-                    stack.push(IntegerOperation.evaluate(op, base.radix, o1, o2))
-                }
-            }
+            stack.push(Operator.evaluate(t, base, o1, o2))
         }
         else if (Utils.isFunction(t)) {
             if (stack.size < 1) {

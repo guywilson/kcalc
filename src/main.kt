@@ -15,6 +15,13 @@ import java.math.BigInteger
 import java.util.Calendar
 import java.time.Year
 
+val cal:Calendar = Calendar.getInstance()
+val year: Int = cal.get(Calendar.YEAR)
+
+val banner: String = """
+Welcome to Calc. A cmd line scientific calculator. Copyright © Guy Wilson $year
+Type a calculation or command at the prompt, type 'help' for info."""
+
 enum class Base(val radix: Int) {
     DECIMAL(10),
     HEXADECIMAL(16),
@@ -30,11 +37,7 @@ fun printWarranty() {
 }
 
 fun printBanner() {
-    val cal:Calendar = Calendar.getInstance()
-    val year: Int = cal.get(Calendar.YEAR)
-
-    println("Welcome to Calc. A cmd line scientific calculator. Copyright © Guy Wilson $year")
-    println("Type a calculation or command at the prompt, type 'help' for info.")
+    println(banner)
     println()
 }
 
@@ -135,7 +138,8 @@ fun main() {
         else if (calculation.startsWith("cls") || calculation.startsWith("clear")) {
             terminal.puts(Capability.clear_screen);
 
-            printBanner()
+            reader.printAbove(banner);
+            reader.printAbove("\n");
         }
         else if (calculation.startsWith("dec", false)) {
             result = BigDecimal(BigInteger(result, base.radix)).setScale(Utils.scale, RoundingMode.HALF_UP).toPlainString()

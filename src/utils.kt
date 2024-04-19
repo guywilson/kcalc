@@ -144,7 +144,7 @@ class Utils {
 
         public fun getPrescedence(token: String) : Int {
             if (isOperator(token[0])) {
-                return OperationUtils.getPrecedence(OperationUtils.getOperation(token[0]))
+                return Operator.getPrecedence(token)
             }
             else if (isFunction(token)) {
                 return Function.getPrescedence()
@@ -155,7 +155,7 @@ class Utils {
 
         public fun getAssociativity(token: String) : Associativity {
             if (isOperator(token[0])) {
-                return OperationUtils.getAssociativity(OperationUtils.getOperation(token[0]))
+                return Operator.getAssociativity(token)
             }
             else {
                 return Associativity.LEFT
